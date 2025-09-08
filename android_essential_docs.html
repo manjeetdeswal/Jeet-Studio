@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Android Essential Plugin  - Documentation</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; color: #ccc; background-color: #1c1c1c; margin: 0; padding: 0; }
+        .wrapper { display: flex; }
+        #sidebar { width: 250px; background-color: #111; color: #fff; padding: 20px; height: 100vh; position: fixed; overflow-y: auto; }
+        #sidebar h2 { color: #4fc3f7; text-align: center; }
+        #sidebar ul { list-style: none; padding: 0; }
+        #sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 10px 15px; border-radius: 4px; }
+        #sidebar ul li a:hover { background-color: #444; }
+        #main-content { margin-left: 290px; padding: 20px; }
+        h1, h2, h3 { color: #4fc3f7; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        p, li { color: #bbb; }
+        code { background-color: #2a2a2a; padding: 2px 6px; border-radius: 4px; font-family: "Courier New", Courier, monospace; color: #9cdcfe; }
+        .node { background-color: #252525; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        .node h3 { margin-top: 0; color: #569cd6; }
+        .pins { margin-top: 15px; }
+        .pin { margin-bottom: 10px; }
+        .pin-name { font-weight: bold; color: #dcdcaa; }
+        .pin-type { font-style: italic; color: #c586c0; }
+        .note { background-color: #332b00; border-left: 4px solid #ffbf00; padding: 15px; margin-top: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <nav id="sidebar">
+        <h2>Android Essential</h2>
+        <ul>
+            <li><a href="#pak_nodes">PAK File Utilities</a></li>
+            <li><a href="#app_mgmt_nodes">App Management</a></li>
+            <li><a href="#media_sharing">Media & Sharing</a></li>
+            <li><a href="#device_hardware">Device & Hardware</a></li>
+            <li><a href="#user_interface">User Interface</a></li>
+            <li><a href="#permissions">Permissions</a></li>
+            <li><a href="#notifications">Notifications</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <h1>Android Essential Plugin  Documentation</h1>
+        <p>This guide provides a reference for all Blueprint nodes across the plugin suite.</p>
+
+        <section id="pak_nodes">
+            <h2>PAK File Utilities</h2>
+
+            <div class="node">
+                <h3>Mount Pak File (Async)</h3>
+                <p>Mounts a <code>.pak</code> file asynchronously without freezing the game. This is useful for loading DLC, mods, or extra content at runtime. The node will execute one of its output pins when the operation is complete.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Pak File Path (In):</span> <span class="pin-type">String</span> - The absolute path to the <code>.pak</code> file on the device.</div>
+                    <div class="pin"><span class="pin-name">On Success (Out):</span> <span class="pin-type">Exec</span> - Fires when the PAK is successfully mounted. Provides a success message.</div>
+                    <div class="pin"><span class="pin-name">On Failure (Out):</span> <span class="pin-type">Exec</span> - Fires if the mounting fails. Provides an error message.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Unmount Pak File</h3>
+                <p>Unmounts a previously mounted <code>.pak</code> file, making its assets unavailable and freeing up resources.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Pak File Path (In):</span> <span class="pin-type">String</span> - The absolute path to the <code>.pak</code> file to unmount.</div>
+                    <div class="pin"><span class="pin-name">Return Value (Out):</span> <span class="pin-type">Boolean</span> - Returns true if the unmount was successful or if the file wasn't mounted.</div>
+                    <div class="pin"><span class="pin-name">Out Message (Out):</span> <span class="pin-type">String</span> - Provides information about the result of the operation.</div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="border-color: #333; margin: 40px 0;">
+
+        <section id="app_mgmt_nodes">
+            <h2>Android App Management</h2>
+
+            <div class="node">
+                <h3>Check For Update</h3>
+                <p>Initiates the Google Play In-App Update flow. If an update for your app is available on the Play Store, Google Play will display a dialog to the user, allowing them to update the app immediately or flexibly in the background.</p>
+                <div class="note"><strong>Testing Requirement:</strong> This will only work with a build that has been uploaded to the Google Play Console (e.g., Internal Testing track). You must install this build, and then upload a newer version to the same track to trigger the update prompt.</div>
+            </div>
+
+            <div class="node">
+                <h3>Request Review</h3>
+                <p>Initiates the Google Play In-App Review flow. This will show a review dialog to the user inside the app. The dialog's appearance is controlled by a quota set by Google to prevent spam.</p>
+                 <div class="note"><strong>Usage Guidelines:</strong> Do not call this from a button (e.g., "Rate App"). Instead, trigger it after a positive user experience, such as completing a level or achieving a high score. The dialog may not appear every time you call the function. Testing requires a build from the Google Play Console.</div>
+            </div>
+        </section>
+        
+        <hr style="border-color: #333; margin: 40px 0;">
+
+        <section id="media_sharing">
+            <h2>Media & Sharing</h2>
+
+            <div class="node">
+                <h3>Share Game Screenshot</h3>
+                <p>Captures the current screen and opens the native Android share dialog.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Chooser Title (In):</span> <span class="pin-type">String</span> - The title of the share dialog (e.g., "Share Screenshot").</div>
+                </div>
+                <div class="note"><strong>Note:</strong> This requires a rendered world. It will produce a black image if called from a context without a 3D viewport (like a UI-only widget).</div>
+            </div>
+
+            <div class="node">
+                <h3>Save Game Screenshot to Gallery</h3>
+                <p>Captures the current screen and saves it directly to the device's public "Pictures" gallery.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">File Name (In):</span> <span class="pin-type">String</span> - The desired name of the file, without the extension.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Share Image</h3>
+                <p>Shares a `Texture2D` asset from your project via the native Android share dialog.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Image (In):</span> <span class="pin-type">Texture 2D</span> - The texture asset to share.</div>
+                    <div class="pin"><span class="pin-name">Chooser Title (In):</span> <span class="pin-type">String</span> - The title of the share dialog.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Share Image From Path</h3>
+                <p>Shares a local image file from a given path.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Image Path (In):</span> <span class="pin-type">String</span> - The absolute path to the image file on the device.</div>
+                    <div class="pin"><span class="pin-name">Chooser Title (In):</span> <span class="pin-type">String</span> - The title of the share dialog.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Share Text</h3>
+                <p>Shares a simple text string via the native Android share dialog.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Text (In):</span> <span class="pin-type">String</span> - The text content to share.</div>
+                    <div class="pin"><span class="pin-name">Subject (In):</span> <span class="pin-type">String</span> - The subject line, used by apps like email clients.</div>
+                </div>
+            </div>
+            
+        </section>
+
+        <hr style="border-color: #333; margin: 40px 0;">
+
+        <section id="device_hardware">
+            <h2>Device & Hardware</h2>
+
+            <div class="node">
+                <h3>Is Internet Connected</h3>
+                <p>Returns true if the device has an active network connection with internet access.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Return Value:</span> <span class="pin-type">Boolean</span> - True if connected, false otherwise.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Get Battery Percentage</h3>
+                <p>Returns the device's current battery level as a percentage.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Return Value:</span> <span class="pin-type">Integer</span> - A value from 0 to 100.</div>
+                </div>
+            </div>
+
+            <div class="node">
+                <h3>Get SDK Version</h3>
+                <p>Returns the Android API level of the device (e.g., 33 for Android 13).</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Return Value:</span> <span class="pin-type">Integer</span> - The Android API level.</div>
+                </div>
+            </div>
+
+        </section>
+
+        <hr style="border-color: #333; margin: 40px 0;">
+
+        <section id="user_interface">
+            <h2>User Interface</h2>
+
+             <div class="node">
+                <h3>Show Toast</h3>
+                <p>Displays a small, temporary pop-up message (a "toast") at the bottom of the screen.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Message (In):</span> <span class="pin-type">String</span> - The text to display.</div>
+                    <div class="pin"><span class="pin-name">Long Duration (In):</span> <span class="pin-type">Boolean</span> - If true, the toast lasts longer.</div>
+                </div>
+            </div>
+
+             <div class="node">
+                <h3>Show Time Picker</h3>
+                <p>Opens the native Android time selection dialog. Triggers the `On Result` event when the user picks a time or cancels.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">On Result (In):</span> <span class="pin-type">Event</span> - An event that fires with the result. You must create a custom event and connect it to this pin.</div>
+                </div>
+                 <div class="note"><strong>Usage:</strong> Right-click the `On Result` pin and select "Create Custom Event". This will create a new event node with `Hour`, `Minute`, and `bSuccess` output pins.</div>
+            </div>
+
+             <div class="node">
+                <h3>Show Date Picker</h3>
+                <p>Opens the native Android date selection dialog. Triggers the `On Result` event when the user picks a date or cancels.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">On Result (In):</span> <span class="pin-type">Event</span> - An event that fires with the result.</div>
+                </div>
+                <div class="note"><strong>Usage:</strong> Right-click the `On Result` pin and select "Create Custom Event". This creates a new event node with `Year`, `Month`, `Day`, and `bSuccess` outputs.</div>
+            </div>
+
+             <div class="node">
+                <h3>Pick From Gallery</h3>
+                <p>Opens the native Android gallery to let the user select an image, video, or audio file.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">On Result (In):</span> <span class="pin-type">Event</span> - An event that fires with the result.</div>
+                </div>
+                 <div class="note"><strong>Usage:</strong> Create a custom event from the `On Result` pin. It will provide the `File Path`, `File Name`, `bSuccess`, and a loaded `Texture 2D` (if the selected file was an image).</div>
+            </div>
+
+             <div class="node">
+                <h3>Pick Any File</h3>
+                <p>Opens the native Android file browser for selecting any type of file.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">On Result (In):</span> <span class="pin-type">Event</span> - An event that fires with the result.</div>
+                    <div class="pin"><span class="pin-name">Allow Multiple (In):</span> <span class="pin-type">Boolean</span> - If true, the user can select multiple files.</div>
+                </div>
+                <div class="note"><strong>Usage:</strong> Create a custom event from the `On Result` pin. It will provide arrays of file information.</div>
+            </div>
+
+             <div class="node">
+                <h3>Launch URL Fixed</h3>
+                <p>Opens the specified URL in the device's default web browser.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">URL (In):</span> <span class="pin-type">String</span> - The web address to open.</div>
+                </div>
+            </div>
+
+        </section>
+
+        <hr style="border-color: #333; margin: 40px 0;">
+
+        <section id="permissions">
+            <h2>Permissions</h2>
+            
+             <div class="node">
+                <h3>Check And Request Android Storage Permissions</h3>
+                <p>Requests `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. This is for older Android versions (below API 30).</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">On Permission Granted (Out):</span> <span class="pin-type">Exec</span> - Fires if all permissions are granted.</div>
+                    <div class="pin"><span class="pin-name">On Permission Denied (Out):</span> <span class="pin-type">Exec</span> - Fires if any permission is denied.</div>
+                    <div class="pin"><span class="pin-name">Permissions (Out):</span> <span class="pin-type">Array of String</span> - The list of granted permissions.</div>
+                </div>
+            </div>
+
+             <div class="node">
+                <h3>Request Notification Permission</h3>
+                <p>On Android 13 (API 33) and newer, you must request permission to post notifications.</p>
+                 <div class="pins">
+                    <div class="pin"><span class="pin-name">On Permission Granted (Out):</span> <span class="pin-type">Exec</span> - Fires if permission is granted.</div>
+                    <div class="pin"><span class="pin-name">On Permission Denied (Out):</span> <span class="pin-type">Exec</span> - Fires if permission is denied.</div>
+                </div>
+            </div>
+
+             <div class="node">
+                <h3>Is Notification Permission Granted</h3>
+                <p>Returns true if the permission to post notifications has been granted.</p>
+                 <div class="pins">
+                    <div class="pin"><span class="pin-name">Return Value:</span> <span class="pin-type">Boolean</span> - True if permission is granted.</div>
+                </div>
+            </div>
+
+        </section>
+
+        <hr style="border-color: #333; margin: 40px 0;">
+
+         <section id="notifications">
+            <h2>Notifications</h2>
+            
+             <div class="node">
+                <h3>Post Notification</h3>
+                <p>Displays a standard Android notification in the status bar.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Title (In):</span> <span class="pin-type">String</span> - The title of the notification.</div>
+                    <div class="pin"><span class="pin-name">Content (In):</span> <span class="pin-type">String</span> - The main text of the notification.</div>
+                    <div class="pin"><span class="pin-name">Notification Id (In):</span> <span class="pin-type">Integer</span> - A unique ID for this notification.</div>
+                </div>
+            </div>
+
+             <div class="node">
+                <h3>Post Notification with Texture Icon</h3>
+                <p>Displays a notification with a large icon provided by a `Texture2D` asset.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Title (In):</span> <span class="pin-type">String</span></div>
+                    <div class="pin"><span class="pin-name">Content (In):</span> <span class="pin-type">String</span></div>
+                    <div class="pin"><span class="pin-name">Icon Texture (In):</span> <span class="pin-type">Texture 2D</span> - The texture to use as the large icon.</div>
+                    <div class="pin"><span class="pin-name">Notification Id (In):</span> <span class="pin-type">Integer</span></div>
+                </div>
+                <div class="note"><strong>Important:</strong> For this to work, the texture asset must have its <strong>Compression Settings</strong> set to <strong>UserInterface2D (RGBA)</strong>.</div>
+            </div>
+
+             <div class="node">
+                <h3>Cancel Notification</h3>
+                <p>Removes a specific notification from the status bar.</p>
+                <div class="pins">
+                    <div class="pin"><span class="pin-name">Notification Id (In):</span> <span class="pin-type">Integer</span> - The ID of the notification to cancel.</div>
+                </div>
+            </div>
+
+             <div class="node">
+                <h3>Cancel All Notifications</h3>
+                <p>Removes all notifications posted by your app.</p>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>f
